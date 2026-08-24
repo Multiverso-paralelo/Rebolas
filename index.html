@@ -64,6 +64,15 @@
         .btn-download { background: #00b4db; color: #fff; border: none; }
         .btn-clear { background: #d90429; color: #fff; border: none; }
 
+        .save-indicator {
+            font-size: 13px;
+            color: #00ff88;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
         /* ÁREA DA TIERLIST */
         #export-area {
             width: 100%;
@@ -111,12 +120,14 @@
         .credits-name {
             color: #00ff88;
             font-weight: 900;
+            outline: none;
         }
 
         .date-text {
             color: #00d2ff;
             font-size: 13px;
             font-weight: 700;
+            outline: none;
         }
 
         /* LISTA DAS TIERS */
@@ -150,6 +161,7 @@
             color: #ffffff;
             text-shadow: 1px 1px 3px #000;
             border-right: 2px solid #1f2535;
+            outline: none;
         }
 
         /* CORES DAS TIERS */
@@ -304,52 +316,57 @@
 
     <!-- BOTÕES -->
     <div class="toolbar">
-        <label class="btn btn-upload">
-            📁 + Adicionar Imagens
-            <input type="file" id="filePicker" multiple accept="image/*" style="display: none;">
-        </label>
-        <button class="btn btn-clear" id="clearBtn">Limpar Fotos</button>
+        <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+            <label class="btn btn-upload">
+                📁 + Adicionar Imagens
+                <input type="file" id="filePicker" multiple accept="image/*" style="display: none;">
+            </label>
+            <button class="btn btn-clear" id="clearBtn">Limpar Fotos</button>
+        </div>
+        
+        <div class="save-indicator" id="saveIndicator">💾 Salvo automaticamente</div>
+
         <button class="btn btn-download" id="downloadBtn">📸 Baixar Imagem HD (.PNG)</button>
     </div>
 
     <!-- TIERLIST -->
     <div id="export-area">
         <div class="tier-header">
-            <div class="main-title" contenteditable="true">TIERLIST OFICIAL</div>
+            <div class="main-title" id="mainTitle" contenteditable="true">TIERLIST OFICIAL</div>
             <div class="credits-box">
-                <div>CREDITS: <span class="credits-name">HYTECHPIXEL</span></div>
-                <div class="date-text" id="dateDisplay"></div>
+                <div>CREDITS: <span class="credits-name" id="creditsName" contenteditable="true">HYTECHPIXEL</span></div>
+                <div class="date-text" id="dateDisplay" contenteditable="true"></div>
             </div>
         </div>
 
         <div class="tier-list">
             <div class="tier-row">
                 <div class="tier-badge tier-top10" contenteditable="true">Top 10</div>
-                <div class="tier-dropzone"></div>
+                <div class="tier-dropzone" data-tier-id="top10"></div>
             </div>
             <div class="tier-row">
                 <div class="tier-badge tier-overall" contenteditable="true">Overall Meta</div>
-                <div class="tier-dropzone"></div>
+                <div class="tier-dropzone" data-tier-id="overall"></div>
             </div>
             <div class="tier-row">
                 <div class="tier-badge tier-submeta" contenteditable="true">Sub-Meta</div>
-                <div class="tier-dropzone"></div>
+                <div class="tier-dropzone" data-tier-id="submeta"></div>
             </div>
             <div class="tier-row">
                 <div class="tier-badge tier-decent" contenteditable="true">Decent</div>
-                <div class="tier-dropzone"></div>
+                <div class="tier-dropzone" data-tier-id="decent"></div>
             </div>
             <div class="tier-row">
                 <div class="tier-badge tier-msupport" contenteditable="true">Meta Support</div>
-                <div class="tier-dropzone"></div>
+                <div class="tier-dropzone" data-tier-id="msupport"></div>
             </div>
             <div class="tier-row">
                 <div class="tier-badge tier-support" contenteditable="true">Support</div>
-                <div class="tier-dropzone"></div>
+                <div class="tier-dropzone" data-tier-id="support"></div>
             </div>
             <div class="tier-row">
                 <div class="tier-badge tier-buffers" contenteditable="true">Buffers</div>
-                <div class="tier-dropzone"></div>
+                <div class="tier-dropzone" data-tier-id="buffers"></div>
             </div>
         </div>
     </div>
@@ -370,24 +387,132 @@
     </div>
 
     <script>
-        // Data atual
-        const d = new Date();
-        document.getElementById('dateDisplay').innerText = 
-            `${String(d.getDate()).padStart(2,'0')}.${String(d.getMonth()+1).padStart(2,'0')}.${d.getFullYear()}`;
+        // ================= SISTEMA DE SALVAMENTO AUTOMÁTICO (INDEXEDDB) =================
+        const DB_NAME = 'TierlistDB_Hytech';
+        const STORE_NAME = 'app_state';
 
-        // Configuração Drag and Drop suave para Celular e PC
+        function openDatabase() {
+            return new Promise((resolve, reject) => {
+                const req = indexedDB.open(DB_NAME, 1);
+                req.onupgradeneeded = () => req.result.createObjectStore(STORE_NAME);
+                req.onsuccess = () => resolve(req.result);
+                req.onerror = () => reject(req.error);
+            });
+        }
+
+        async function saveAllState() {
+            const ind = document.getElementById('saveIndicator');
+            ind.innerText = '⏳ Salvando...';
+            ind.style.color = '#ffb703';
+
+            const state = {
+                title: document.getElementById('mainTitle').innerText,
+                credits: document.getElementById('creditsName').innerText,
+                date: document.getElementById('dateDisplay').innerText,
+                tiers: {},
+                pool: []
+            };
+
+            // Salva os badges e fotos de cada tier
+            document.querySelectorAll('.tier-row').forEach(row => {
+                const badge = row.querySelector('.tier-badge');
+                const dropzone = row.querySelector('.tier-dropzone');
+                const tierId = dropzone.getAttribute('data-tier-id');
+                const images = [];
+                dropzone.querySelectorAll('.tier-card img').forEach(img => images.push(img.src));
+
+                state.tiers[tierId] = {
+                    badgeText: badge.innerText,
+                    images: images
+                };
+            });
+
+            // Salva fotos do estoque
+            document.querySelectorAll('#imagePool .tier-card img').forEach(img => {
+                state.pool.push(img.src);
+            });
+
+            try {
+                const db = await openDatabase();
+                const tx = db.transaction(STORE_NAME, 'readwrite');
+                tx.objectStore(STORE_NAME).put(state, 'savedState');
+                setTimeout(() => {
+                    ind.innerText = '💾 Salvo automaticamente';
+                    ind.style.color = '#00ff88';
+                }, 300);
+            } catch (e) {
+                console.error('Erro ao salvar:', e);
+            }
+        }
+
+        async function loadState() {
+            try {
+                const db = await openDatabase();
+                const tx = db.transaction(STORE_NAME, 'readonly');
+                const req = tx.objectStore(STORE_NAME).get('savedState');
+
+                req.onsuccess = () => {
+                    const state = req.result;
+                    if (!state) {
+                        // Data padrão se primeira vez
+                        const d = new Date();
+                        document.getElementById('dateDisplay').innerText = 
+                            `${String(d.getDate()).padStart(2,'0')}.${String(d.getMonth()+1).padStart(2,'0')}.${d.getFullYear()}`;
+                        return;
+                    }
+
+                    // Restaura textos
+                    if (state.title) document.getElementById('mainTitle').innerText = state.title;
+                    if (state.credits) document.getElementById('creditsName').innerText = state.credits;
+                    if (state.date) document.getElementById('dateDisplay').innerText = state.date;
+
+                    // Restaura Tiers
+                    if (state.tiers) {
+                        document.querySelectorAll('.tier-row').forEach(row => {
+                            const dropzone = row.querySelector('.tier-dropzone');
+                            const badge = row.querySelector('.tier-badge');
+                            const tierId = dropzone.getAttribute('data-tier-id');
+
+                            if (state.tiers[tierId]) {
+                                if (state.tiers[tierId].badgeText) {
+                                    badge.innerText = state.tiers[tierId].badgeText;
+                                }
+                                state.tiers[tierId].images.forEach(src => {
+                                    dropzone.appendChild(createCard(src));
+                                });
+                            }
+                        });
+                    }
+
+                    // Restaura Estoque
+                    if (state.pool) {
+                        const pool = document.getElementById('imagePool');
+                        state.pool.forEach(src => {
+                            pool.appendChild(createCard(src));
+                        });
+                    }
+                };
+            } catch (e) {
+                console.error('Erro ao carregar:', e);
+            }
+        }
+
+        // ================= CONFIGURAÇÃO GERAL =================
+
+        // Ativa Drag & Drop com auto-save
         const dropzones = document.querySelectorAll('.tier-dropzone, #imagePool');
         dropzones.forEach(zone => {
             new Sortable(zone, {
                 group: 'tierlist',
                 animation: 150,
                 touchStartThreshold: 4,
-                ghostClass: 'sortable-ghost'
+                ghostClass: 'sortable-ghost',
+                onEnd: () => saveAllState() // Salva sempre que mover uma imagem
             });
         });
 
-        // Função Criar Card
-        function addCard(src) {
+        // Função para criar o elemento da foto
+        function createCard(src) {
             const card = document.createElement('div');
             card.className = 'tier-card';
 
@@ -400,79 +525,51 @@
             del.onclick = (e) => {
                 e.stopPropagation();
                 card.remove();
+                saveAllState(); // Salva ao deletar
             };
 
             card.appendChild(img);
             card.appendChild(del);
-            document.getElementById('imagePool').appendChild(card);
+            return card;
         }
 
-        // Upload de Fotos
+        // Upload de Fotos com auto-save
         const filePicker = document.getElementById('filePicker');
         filePicker.addEventListener('change', (e) => {
             const files = Array.from(e.target.files);
+            let processed = 0;
             files.forEach(file => {
                 const reader = new FileReader();
-                reader.onload = (event) => addCard(event.target.result);
+                reader.onload = (event) => {
+                    const card = createCard(event.target.result);
+                    document.getElementById('imagePool').appendChild(card);
+                    processed++;
+                    if (processed === files.length) {
+                        saveAllState(); // Salva quando terminar de ler todas
+                    }
+                };
                 reader.readAsDataURL(file);
             });
             filePicker.value = '';
         });
 
-        // Limpar fotos
+        // Auto-save ao editar textos
+        document.querySelectorAll('[contenteditable="true"]').forEach(elem => {
+            elem.addEventListener('blur', () => saveAllState());
+        });
+
+        // Limpar fotos com limpeza do banco
         document.getElementById('clearBtn').onclick = () => {
-            if (confirm('Remover todas as fotos?')) {
+            if (confirm('Remover todas as fotos salvas?')) {
                 document.querySelectorAll('.tier-card').forEach(el => el.remove());
+                saveAllState();
             }
         };
 
-        // Baixar Imagem HD (Compatível com Android / iOS e PC)
+        // Download HD
         const downloadBtn = document.getElementById('downloadBtn');
         downloadBtn.onclick = () => {
             downloadBtn.innerText = '⏳ Gerando PNG...';
             downloadBtn.disabled = true;
 
-            // Oculta botões de excluir antes de fotografar
-            const deleteButtons = document.querySelectorAll('.del-btn');
-            deleteButtons.forEach(b => b.style.display = 'none');
-
-            const exportArea = document.getElementById('export-area');
-
-            html2canvas(exportArea, {
-                scale: 2,
-                useCORS: true,
-                backgroundColor: '#0d0f14',
-                logging: false
-            }).then(canvas => {
-                deleteButtons.forEach(b => b.style.display = 'flex');
-                downloadBtn.innerText = '📸 Baixar Imagem HD (.PNG)';
-                downloadBtn.disabled = false;
-
-                canvas.toBlob((blob) => {
-                    if (!blob) return;
-
-                    const imgURL = URL.createObjectURL(blob);
-
-                    // Tenta o download direto
-                    const a = document.createElement('a');
-                    a.href = imgURL;
-                    a.download = `tierlist-hytechpixel-${Date.now()}.png`;
-                    document.body.appendChild(a);
-                    a.click();
-                    document.body.removeChild(a);
-
-                    // Abre o modal de garantia no celular caso o Chrome bloqueie o arquivo direto
-                    document.getElementById('previewImg').src = imgURL;
-                    document.getElementById('imageModal').style.display = 'flex';
-                }, 'image/png');
-
-            }).catch(err => {
-                deleteButtons.forEach(b => b.style.display = 'flex');
-                downloadBtn.innerText = '📸 Baixar Imagem HD (.PNG)';
-                downloadBtn.disabled = false;
-                alert('Erro ao gerar imagem: ' + err);
-            });
-        };
-    </script>
-</body>
-</html>
+            const deleteButtons = document.querySelectorA
