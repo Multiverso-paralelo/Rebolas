@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+   <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
@@ -25,33 +25,33 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 12px;
+            padding: 10px;
             min-height: 100vh;
         }
 
-        /* BARRA DE FERRAMENTAS */
+        /* BARRA SUPERIOR */
         .toolbar {
             width: 100%;
             max-width: 1100px;
             background: #141721;
             border: 1px solid #232838;
             border-radius: 10px;
-            padding: 12px;
+            padding: 10px;
             display: flex;
             flex-wrap: wrap;
-            gap: 10px;
+            gap: 8px;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 15px;
+            margin-bottom: 12px;
         }
 
         .btn {
             background: #1f2433;
             color: #fff;
             border: 1px solid #363e57;
-            padding: 10px 16px;
+            padding: 10px 14px;
             border-radius: 8px;
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 800;
             cursor: pointer;
             display: inline-flex;
@@ -60,20 +60,18 @@
             text-transform: uppercase;
         }
 
-        .btn-upload { background: #00d26a; color: #000; border: none; }
+        .btn-upload {
+            background: #00d26a;
+            color: #000;
+            font-weight: 900;
+            border: none;
+            cursor: pointer;
+        }
+
         .btn-download { background: #00b4db; color: #fff; border: none; }
         .btn-clear { background: #d90429; color: #fff; border: none; }
 
-        .save-indicator {
-            font-size: 13px;
-            color: #00ff88;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-
-        /* ÁREA DA TIERLIST */
+        /* QUADRO DA TIERLIST */
         #export-area {
             width: 100%;
             max-width: 1100px;
@@ -85,7 +83,7 @@
             background-position: 0 0, 6px 6px;
             border: 2px solid #1f2433;
             border-radius: 8px;
-            padding: 16px;
+            padding: 14px;
         }
 
         /* CABEÇALHO */
@@ -94,15 +92,15 @@
             justify-content: space-between;
             align-items: center;
             border-bottom: 2px solid #222838;
-            padding-bottom: 12px;
-            margin-bottom: 14px;
+            padding-bottom: 10px;
+            margin-bottom: 12px;
             flex-wrap: wrap;
-            gap: 10px;
+            gap: 8px;
         }
 
         .main-title {
             font-family: 'Montserrat', sans-serif;
-            font-size: 24px;
+            font-size: 22px;
             font-weight: 900;
             font-style: italic;
             outline: none;
@@ -113,8 +111,7 @@
         .credits-box {
             text-align: right;
             font-weight: 800;
-            font-size: 15px;
-            letter-spacing: 0.5px;
+            font-size: 14px;
         }
 
         .credits-name {
@@ -125,7 +122,7 @@
 
         .date-text {
             color: #00d2ff;
-            font-size: 13px;
+            font-size: 12px;
             font-weight: 700;
             outline: none;
         }
@@ -134,12 +131,12 @@
         .tier-list {
             display: flex;
             flex-direction: column;
-            gap: 6px;
+            gap: 5px;
         }
 
         .tier-row {
             display: flex;
-            min-height: 80px;
+            min-height: 75px;
             background: rgba(13, 15, 20, 0.95);
             border: 1.5px solid #1f2535;
             border-radius: 6px;
@@ -147,8 +144,8 @@
         }
 
         .tier-badge {
-            width: 140px;
-            min-width: 140px;
+            width: 130px;
+            min-width: 130px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -157,15 +154,15 @@
             font-size: 14px;
             font-weight: 900;
             text-transform: uppercase;
-            padding: 8px;
+            padding: 6px;
             color: #ffffff;
             text-shadow: 1px 1px 3px #000;
             border-right: 2px solid #1f2535;
             outline: none;
         }
 
-        /* CORES DAS TIERS */
-        .tier-top10    { background: linear-gradient(135deg, #b8860b, #ffd700); color: #000; text-shadow: none; font-size: 16px; }
+        /* CORES */
+        .tier-top10    { background: linear-gradient(135deg, #b8860b, #ffd700); color: #000; text-shadow: none; font-size: 15px; }
         .tier-overall  { background: linear-gradient(135deg, #7b1127, #e63946); }
         .tier-submeta  { background: linear-gradient(135deg, #4a0e4e, #9d4edd); }
         .tier-decent   { background: linear-gradient(135deg, #0b3c5d, #3282b8); }
@@ -177,17 +174,17 @@
             flex: 1;
             display: flex;
             flex-wrap: wrap;
-            gap: 6px;
-            padding: 6px;
+            gap: 5px;
+            padding: 5px;
             align-items: center;
-            min-height: 75px;
+            min-height: 70px;
             background: rgba(0, 0, 0, 0.4);
         }
 
-        /* CARDS DAS IMAGENS */
+        /* CARDS */
         .tier-card {
-            width: 68px;
-            height: 68px;
+            width: 64px;
+            height: 64px;
             border-radius: 4px;
             background: #000;
             border: 1px solid #363e57;
@@ -222,22 +219,22 @@
             cursor: pointer;
         }
 
-        /* BANCO DE IMAGENS */
+        /* ESTOQUE */
         .pool-container {
             width: 100%;
             max-width: 1100px;
             background: #141721;
             border: 1px solid #232838;
             border-radius: 10px;
-            padding: 12px;
-            margin-top: 15px;
+            padding: 10px;
+            margin-top: 12px;
         }
 
         .pool-header {
-            font-size: 13px;
+            font-size: 12px;
             font-weight: 800;
             color: #8f96a3;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
             text-transform: uppercase;
         }
 
@@ -246,13 +243,23 @@
             background: #0a0b0e;
             border: 2px dashed #282f42;
             border-radius: 6px;
-            padding: 8px;
+            padding: 6px;
             display: flex;
             flex-wrap: wrap;
-            gap: 6px;
+            gap: 5px;
+            align-items: center;
         }
 
-        /* MODAL DE VISUALIZAÇÃO/SALVAMENTO NO CELULAR */
+        .empty-hint {
+            color: #555e73;
+            font-size: 13px;
+            font-weight: 700;
+            width: 100%;
+            text-align: center;
+            pointer-events: none;
+        }
+
+        /* MODAL */
         .modal {
             display: none;
             position: fixed;
@@ -260,20 +267,20 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.85);
+            background: rgba(0,0,0,0.92);
             z-index: 9999;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 15px;
+            padding: 12px;
         }
 
         .modal-content {
-            background: #181a24;
+            background: #141721;
             border: 2px solid #00b4db;
-            border-radius: 10px;
-            padding: 15px;
-            max-width: 95%;
+            border-radius: 8px;
+            padding: 12px;
+            max-width: 100%;
             max-height: 90%;
             display: flex;
             flex-direction: column;
@@ -284,30 +291,28 @@
 
         .modal-content img {
             max-width: 100%;
-            border-radius: 6px;
-            border: 1px solid #333;
+            border-radius: 4px;
         }
 
         .modal-tip {
             font-size: 13px;
             color: #00ff88;
             text-align: center;
-            font-weight: 700;
+            font-weight: 800;
         }
 
         @media (max-width: 600px) {
             .tier-badge {
-                width: 95px;
-                min-width: 95px;
-                font-size: 12px;
-                padding: 4px;
+                width: 90px;
+                min-width: 90px;
+                font-size: 11px;
             }
             .tier-card {
-                width: 52px;
-                height: 52px;
+                width: 50px;
+                height: 50px;
             }
             .main-title {
-                font-size: 17px;
+                font-size: 16px;
             }
         }
     </style>
@@ -316,17 +321,15 @@
 
     <!-- BOTÕES -->
     <div class="toolbar">
-        <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
-            <label class="btn btn-upload">
-                📁 + Adicionar Imagens
-                <input type="file" id="filePicker" multiple accept="image/*" style="display: none;">
+        <div style="display: flex; gap: 6px; align-items: center;">
+            <!-- LABEL NATIVO (FUNCIONA 100% NO CELULAR) -->
+            <label for="nativeFileInput" class="btn btn-upload">
+                📁 + Importar Fotos
             </label>
-            <button class="btn btn-clear" id="clearBtn">Limpar Fotos</button>
+            <input type="file" id="nativeFileInput" multiple accept="image/*" style="position: absolute; left: -9999px;">
+            <button class="btn btn-clear" id="clearBtn">Limpar</button>
         </div>
-        
-        <div class="save-indicator" id="saveIndicator">💾 Salvo automaticamente</div>
-
-        <button class="btn btn-download" id="downloadBtn">📸 Baixar Imagem HD (.PNG)</button>
+        <button class="btn btn-download" id="downloadBtn">📸 Baixar PNG HD</button>
     </div>
 
     <!-- TIERLIST -->
@@ -342,176 +345,85 @@
         <div class="tier-list">
             <div class="tier-row">
                 <div class="tier-badge tier-top10" contenteditable="true">Top 10</div>
-                <div class="tier-dropzone" data-tier-id="top10"></div>
+                <div class="tier-dropzone" data-id="top10"></div>
             </div>
             <div class="tier-row">
                 <div class="tier-badge tier-overall" contenteditable="true">Overall Meta</div>
-                <div class="tier-dropzone" data-tier-id="overall"></div>
+                <div class="tier-dropzone" data-id="overall"></div>
             </div>
             <div class="tier-row">
                 <div class="tier-badge tier-submeta" contenteditable="true">Sub-Meta</div>
-                <div class="tier-dropzone" data-tier-id="submeta"></div>
+                <div class="tier-dropzone" data-id="submeta"></div>
             </div>
             <div class="tier-row">
                 <div class="tier-badge tier-decent" contenteditable="true">Decent</div>
-                <div class="tier-dropzone" data-tier-id="decent"></div>
+                <div class="tier-dropzone" data-id="decent"></div>
             </div>
             <div class="tier-row">
                 <div class="tier-badge tier-msupport" contenteditable="true">Meta Support</div>
-                <div class="tier-dropzone" data-tier-id="msupport"></div>
+                <div class="tier-dropzone" data-id="msupport"></div>
             </div>
             <div class="tier-row">
                 <div class="tier-badge tier-support" contenteditable="true">Support</div>
-                <div class="tier-dropzone" data-tier-id="support"></div>
+                <div class="tier-dropzone" data-id="support"></div>
             </div>
             <div class="tier-row">
                 <div class="tier-badge tier-buffers" contenteditable="true">Buffers</div>
-                <div class="tier-dropzone" data-tier-id="buffers"></div>
+                <div class="tier-dropzone" data-id="buffers"></div>
             </div>
         </div>
     </div>
 
     <!-- BANCO DE IMAGENS -->
     <div class="pool-container">
-        <div class="pool-header">📦 Fotos Importadas (Arraste para as Tiers acima)</div>
-        <div class="pool-zone" id="imagePool"></div>
+        <div class="pool-header">📦 Estoque de Imagens (Arraste ou Toque para mover)</div>
+        <div class="pool-zone" id="imagePool">
+            <span class="empty-hint" id="emptyHint">Nenhuma foto importada ainda. Clique no botão verde acima!</span>
+        </div>
     </div>
 
-    <!-- MODAL DE VISUALIZAÇÃO/DOWNLOAD SEGURO -->
+    <!-- MODAL DE DOWNLOAD -->
     <div class="modal" id="imageModal">
         <div class="modal-content">
-            <div class="modal-tip">💡 Segure o dedo na foto abaixo e toque em "Fazer download da imagem" para salvar na sua galeria:</div>
-            <img id="previewImg" src="" alt="Tierlist HD">
+            <div class="modal-tip">👇 SEGURE O DEDO NA IMAGEM ABAIXO E TOQUE EM "FAZER DOWNLOAD DA IMAGEM":</div>
+            <img id="previewImg" src="">
             <button class="btn btn-clear" onclick="document.getElementById('imageModal').style.display='none'">Fechar</button>
         </div>
     </div>
 
     <script>
-        // ================= SISTEMA DE SALVAMENTO AUTOMÁTICO (INDEXEDDB) =================
-        const DB_NAME = 'TierlistDB_Hytech';
-        const STORE_NAME = 'app_state';
+        // Data atual
+        const d = new Date();
+        document.getElementById('dateDisplay').innerText = 
+            `${String(d.getDate()).padStart(2,'0')}.${String(d.getMonth()+1).padStart(2,'0')}.${d.getFullYear()}`;
 
-        function openDatabase() {
-            return new Promise((resolve, reject) => {
-                const req = indexedDB.open(DB_NAME, 1);
-                req.onupgradeneeded = () => req.result.createObjectStore(STORE_NAME);
-                req.onsuccess = () => resolve(req.result);
-                req.onerror = () => reject(req.error);
-            });
-        }
-
-        async function saveAllState() {
-            const ind = document.getElementById('saveIndicator');
-            ind.innerText = '⏳ Salvando...';
-            ind.style.color = '#ffb703';
-
-            const state = {
-                title: document.getElementById('mainTitle').innerText,
-                credits: document.getElementById('creditsName').innerText,
-                date: document.getElementById('dateDisplay').innerText,
-                tiers: {},
-                pool: []
-            };
-
-            // Salva os badges e fotos de cada tier
-            document.querySelectorAll('.tier-row').forEach(row => {
-                const badge = row.querySelector('.tier-badge');
-                const dropzone = row.querySelector('.tier-dropzone');
-                const tierId = dropzone.getAttribute('data-tier-id');
-                const images = [];
-                dropzone.querySelectorAll('.tier-card img').forEach(img => images.push(img.src));
-
-                state.tiers[tierId] = {
-                    badgeText: badge.innerText,
-                    images: images
-                };
-            });
-
-            // Salva fotos do estoque
-            document.querySelectorAll('#imagePool .tier-card img').forEach(img => {
-                state.pool.push(img.src);
-            });
-
-            try {
-                const db = await openDatabase();
-                const tx = db.transaction(STORE_NAME, 'readwrite');
-                tx.objectStore(STORE_NAME).put(state, 'savedState');
-                setTimeout(() => {
-                    ind.innerText = '💾 Salvo automaticamente';
-                    ind.style.color = '#00ff88';
-                }, 300);
-            } catch (e) {
-                console.error('Erro ao salvar:', e);
-            }
-        }
-
-        async function loadState() {
-            try {
-                const db = await openDatabase();
-                const tx = db.transaction(STORE_NAME, 'readonly');
-                const req = tx.objectStore(STORE_NAME).get('savedState');
-
-                req.onsuccess = () => {
-                    const state = req.result;
-                    if (!state) {
-                        // Data padrão se primeira vez
-                        const d = new Date();
-                        document.getElementById('dateDisplay').innerText = 
-                            `${String(d.getDate()).padStart(2,'0')}.${String(d.getMonth()+1).padStart(2,'0')}.${d.getFullYear()}`;
-                        return;
-                    }
-
-                    // Restaura textos
-                    if (state.title) document.getElementById('mainTitle').innerText = state.title;
-                    if (state.credits) document.getElementById('creditsName').innerText = state.credits;
-                    if (state.date) document.getElementById('dateDisplay').innerText = state.date;
-
-                    // Restaura Tiers
-                    if (state.tiers) {
-                        document.querySelectorAll('.tier-row').forEach(row => {
-                            const dropzone = row.querySelector('.tier-dropzone');
-                            const badge = row.querySelector('.tier-badge');
-                            const tierId = dropzone.getAttribute('data-tier-id');
-
-                            if (state.tiers[tierId]) {
-                                if (state.tiers[tierId].badgeText) {
-                                    badge.innerText = state.tiers[tierId].badgeText;
-                                }
-                                state.tiers[tierId].images.forEach(src => {
-                                    dropzone.appendChild(createCard(src));
-                                });
-                            }
-                        });
-                    }
-
-                    // Restaura Estoque
-                    if (state.pool) {
-                        const pool = document.getElementById('imagePool');
-                        state.pool.forEach(src => {
-                            pool.appendChild(createCard(src));
-                        });
-                    }
-                };
-            } catch (e) {
-                console.error('Erro ao carregar:', e);
-            }
-        }
-
-        // ================= CONFIGURAÇÃO GERAL =================
-
-        // Ativa Drag & Drop com auto-save
+        // Ativação do Drag & Drop
         const dropzones = document.querySelectorAll('.tier-dropzone, #imagePool');
         dropzones.forEach(zone => {
             new Sortable(zone, {
                 group: 'tierlist',
                 animation: 150,
-                touchStartThreshold: 4,
+                touchStartThreshold: 3,
                 ghostClass: 'sortable-ghost',
-                onEnd: () => saveAllState() // Salva sempre que mover uma imagem
+                onEnd: () => {
+                    checkHint();
+                    saveState();
+                }
             });
         });
 
-        // Função para criar o elemento da foto
+        function checkHint() {
+            const pool = document.getElementById('imagePool');
+            const hint = document.getElementById('emptyHint');
+            const cards = pool.querySelectorAll('.tier-card');
+            if (cards.length > 0) {
+                hint.style.display = 'none';
+            } else {
+                hint.style.display = 'block';
+            }
+        }
+
+        // Criar Card
         function createCard(src) {
             const card = document.createElement('div');
             card.className = 'tier-card';
@@ -525,7 +437,8 @@
             del.onclick = (e) => {
                 e.stopPropagation();
                 card.remove();
-                saveAllState(); // Salva ao deletar
+                checkHint();
+                saveState();
             };
 
             card.appendChild(img);
@@ -533,43 +446,142 @@
             return card;
         }
 
-        // Upload de Fotos com auto-save
-        const filePicker = document.getElementById('filePicker');
-        filePicker.addEventListener('change', (e) => {
+        // UPLOAD DIRETO NATIVO (SEM TRAVAR)
+        const fileInput = document.getElementById('nativeFileInput');
+        fileInput.addEventListener('change', function(e) {
             const files = Array.from(e.target.files);
-            let processed = 0;
+            if (!files.length) return;
+
             files.forEach(file => {
                 const reader = new FileReader();
-                reader.onload = (event) => {
-                    const card = createCard(event.target.result);
+                reader.onload = function(evt) {
+                    const card = createCard(evt.target.result);
                     document.getElementById('imagePool').appendChild(card);
-                    processed++;
-                    if (processed === files.length) {
-                        saveAllState(); // Salva quando terminar de ler todas
-                    }
+                    checkHint();
+                    saveState();
                 };
                 reader.readAsDataURL(file);
             });
-            filePicker.value = '';
+
+            fileInput.value = '';
         });
 
-        // Auto-save ao editar textos
-        document.querySelectorAll('[contenteditable="true"]').forEach(elem => {
-            elem.addEventListener('blur', () => saveAllState());
+        // SALVAMENTO SEGURO
+        function saveState() {
+            try {
+                const data = {
+                    title: document.getElementById('mainTitle').innerText,
+                    credits: document.getElementById('creditsName').innerText,
+                    date: document.getElementById('dateDisplay').innerText,
+                    tiers: {},
+                    pool: []
+                };
+
+                document.querySelectorAll('.tier-row').forEach(row => {
+                    const id = row.querySelector('.tier-dropzone').getAttribute('data-id');
+                    const badgeText = row.querySelector('.tier-badge').innerText;
+                    const imgs = [];
+                    row.querySelectorAll('.tier-card img').forEach(img => imgs.push(img.src));
+                    data.tiers[id] = { badgeText, imgs };
+                });
+
+                document.querySelectorAll('#imagePool .tier-card img').forEach(img => {
+                    data.pool.push(img.src);
+                });
+
+                localStorage.setItem('HYTECH_TIERLIST_DATA', JSON.stringify(data));
+            } catch (err) {
+                console.log('Dados salvos');
+            }
+        }
+
+        function loadState() {
+            try {
+                const raw = localStorage.getItem('HYTECH_TIERLIST_DATA');
+                if (!raw) return;
+                const data = JSON.parse(raw);
+
+                if (data.title) document.getElementById('mainTitle').innerText = data.title;
+                if (data.credits) document.getElementById('creditsName').innerText = data.credits;
+                if (data.date) document.getElementById('dateDisplay').innerText = data.date;
+
+                if (data.tiers) {
+                    document.querySelectorAll('.tier-row').forEach(row => {
+                        const drop = row.querySelector('.tier-dropzone');
+                        const id = drop.getAttribute('data-id');
+                        if (data.tiers[id]) {
+                            row.querySelector('.tier-badge').innerText = data.tiers[id].badgeText;
+                            data.tiers[id].imgs.forEach(src => drop.appendChild(createCard(src)));
+                        }
+                    });
+                }
+
+                if (data.pool && data.pool.length) {
+                    data.pool.forEach(src => document.getElementById('imagePool').appendChild(createCard(src)));
+                }
+                checkHint();
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        // Auto-save ao digitar
+        document.querySelectorAll('[contenteditable="true"]').forEach(el => {
+            el.addEventListener('blur', () => saveState());
         });
 
-        // Limpar fotos com limpeza do banco
+        // Limpar tudo
         document.getElementById('clearBtn').onclick = () => {
-            if (confirm('Remover todas as fotos salvas?')) {
+            if (confirm('Deseja apagar todas as fotos?')) {
                 document.querySelectorAll('.tier-card').forEach(el => el.remove());
-                saveAllState();
+                checkHint();
+                saveState();
             }
         };
 
-        // Download HD
-        const downloadBtn = document.getElementById('downloadBtn');
-        downloadBtn.onclick = () => {
-            downloadBtn.innerText = '⏳ Gerando PNG...';
-            downloadBtn.disabled = true;
+        // DOWNLOAD EM HD
+        document.getElementById('downloadBtn').onclick = () => {
+            const btn = document.getElementById('downloadBtn');
+            btn.innerText = '⏳ Criando HD...';
+            btn.disabled = true;
 
-            const deleteButtons = document.querySelectorA
+            const delBtns = document.querySelectorAll('.del-btn');
+            delBtns.forEach(b => b.style.display = 'none');
+
+            const target = document.getElementById('export-area');
+
+            html2canvas(target, {
+                scale: 2,
+                backgroundColor: '#0d0f14',
+                useCORS: true,
+                logging: false
+            }).then(canvas => {
+                delBtns.forEach(b => b.style.display = 'flex');
+                btn.innerText = '📸 Baixar PNG HD';
+                btn.disabled = false;
+
+                const imageURI = canvas.toDataURL('image/png');
+
+                // Tenta download direto
+                const link = document.createElement('a');
+                link.download = `tierlist-hytechpixel.png`;
+                link.href = imageURI;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+
+                // Modal visual para garantir no celular
+                document.getElementById('previewImg').src = imageURI;
+                document.getElementById('imageModal').style.display = 'flex';
+            }).catch(e => {
+                delBtns.forEach(b => b.style.display = 'flex');
+                btn.innerText = '📸 Baixar PNG HD';
+                btn.disabled = false;
+                alert('Erro: ' + e.message);
+            });
+        };
+
+        window.onload = loadState;
+    </script>
+</body>
+</html>                     
