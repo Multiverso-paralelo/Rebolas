@@ -1,4 +1,4 @@
-   <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
@@ -58,7 +58,13 @@
             align-items: center;
             gap: 6px;
             text-transform: uppercase;
+            transition: filter 0.15s ease, transform 0.1s ease;
         }
+
+        .btn:hover { filter: brightness(1.15); }
+        .btn:active { transform: scale(0.97); }
+        .btn:focus-visible { outline: 2px solid #00d2ff; outline-offset: 2px; }
+        .btn:disabled { opacity: 0.6; cursor: not-allowed; filter: none; transform: none; }
 
         .btn-upload {
             background: #00d26a;
@@ -70,6 +76,15 @@
 
         .btn-download { background: #00b4db; color: #fff; border: none; }
         .btn-clear { background: #d90429; color: #fff; border: none; }
+
+        .visually-hidden {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            overflow: hidden;
+            clip: rect(0 0 0 0);
+            white-space: nowrap;
+        }
 
         /* QUADRO DA TIERLIST */
         #export-area {
@@ -106,6 +121,12 @@
             outline: none;
             color: #ffffff;
             text-transform: uppercase;
+        }
+
+        [contenteditable="true"]:focus {
+            outline: 1px dashed #00d2ff;
+            outline-offset: 3px;
+            border-radius: 3px;
         }
 
         .credits-box {
@@ -179,6 +200,12 @@
             align-items: center;
             min-height: 70px;
             background: rgba(0, 0, 0, 0.4);
+            transition: background 0.15s ease;
+        }
+
+        .tier-dropzone.drag-over,
+        .pool-zone.drag-over {
+            background: rgba(0, 210, 255, 0.08);
         }
 
         /* CARDS */
@@ -192,6 +219,8 @@
             cursor: grab;
             touch-action: none;
         }
+
+        .tier-card:active { cursor: grabbing; }
 
         .tier-card img {
             width: 100%;
@@ -217,6 +246,14 @@
             align-items: center;
             justify-content: center;
             cursor: pointer;
+        }
+
+        .sortable-ghost {
+            opacity: 0.35;
+        }
+
+        .sortable-chosen img {
+            box-shadow: 0 0 0 2px #00d2ff;
         }
 
         /* ESTOQUE */
@@ -301,6 +338,35 @@
             font-weight: 800;
         }
 
+        /* TOAST */
+        #toast {
+            position: fixed;
+            left: 50%;
+            bottom: 18px;
+            transform: translate(-50%, 20px);
+            background: #141721;
+            border: 1px solid #363e57;
+            color: #fff;
+            font-weight: 800;
+            font-size: 13px;
+            padding: 10px 16px;
+            border-radius: 8px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s ease, transform 0.2s ease;
+            z-index: 10000;
+            max-width: 90vw;
+            text-align: center;
+        }
+
+        #toast.show {
+            opacity: 1;
+            transform: translate(-50%, 0);
+        }
+
+        #toast.error { border-color: #d90429; color: #ff5c7a; }
+        #toast.success { border-color: #00d26a; color: #00ff88; }
+
         @media (max-width: 600px) {
             .tier-badge {
                 width: 90px;
@@ -322,14 +388,13 @@
     <!-- BOTÕES -->
     <div class="toolbar">
         <div style="display: flex; gap: 6px; align-items: center;">
-            <!-- LABEL NATIVO (FUNCIONA 100% NO CELULAR) -->
-            <label for="nativeFileInput" class="btn btn-upload">
+            <label for="nativeFileInput" id="uploadLabel" class="btn btn-upload">
                 📁 + Importar Fotos
             </label>
-            <input type="file" id="nativeFileInput" multiple accept="image/*" style="position: absolute; left: -9999px;">
-            <button class="btn btn-clear" id="clearBtn">Limpar</button>
+            <input type="file" id="nativeFileInput" class="visually-hidden" multiple accept="image/*,.heic,.heif">
+            <button class="btn btn-clear" id="clearBtn" type="button">Limpar</button>
         </div>
-        <button class="btn btn-download" id="downloadBtn">📸 Baixar PNG HD</button>
+        <button class="btn btn-download" id="downloadBtn" type="button">📸 Baixar PNG HD</button>
     </div>
 
     <!-- TIERLIST -->
@@ -342,7 +407,7 @@
             </div>
         </div>
 
-        <div class="tier-list">
+        <div class="tier-list" id="tierList">
             <div class="tier-row">
                 <div class="tier-badge tier-top10" contenteditable="true">Top 10</div>
                 <div class="tier-dropzone" data-id="top10"></div>
@@ -386,202 +451,137 @@
     <div class="modal" id="imageModal">
         <div class="modal-content">
             <div class="modal-tip">👇 SEGURE O DEDO NA IMAGEM ABAIXO E TOQUE EM "FAZER DOWNLOAD DA IMAGEM":</div>
-            <img id="previewImg" src="">
-            <button class="btn btn-clear" onclick="document.getElementById('imageModal').style.display='none'">Fechar</button>
+            <img id="previewImg" src="" alt="Prévia da tierlist gerada">
+            <button class="btn btn-clear" id="closeModalBtn" type="button">Fechar</button>
         </div>
     </div>
 
+    <div id="toast" role="status" aria-live="polite"></div>
+
     <script>
-        // Data atual
-        const d = new Date();
-        document.getElementById('dateDisplay').innerText = 
-            `${String(d.getDate()).padStart(2,'0')}.${String(d.getMonth()+1).padStart(2,'0')}.${d.getFullYear()}`;
+        (function () {
+            'use strict';
 
-        // Ativação do Drag & Drop
-        const dropzones = document.querySelectorAll('.tier-dropzone, #imagePool');
-        dropzones.forEach(zone => {
-            new Sortable(zone, {
-                group: 'tierlist',
-                animation: 150,
-                touchStartThreshold: 3,
-                ghostClass: 'sortable-ghost',
-                onEnd: () => {
-                    checkHint();
-                    saveState();
-                }
-            });
-        });
+            const STORAGE_KEY = 'tierlist-state';
+            const MAX_IMG_DIMENSION = 220;   // downscale uploads so the board stays fast and light
+            const JPEG_QUALITY = 0.85;
 
-        function checkHint() {
-            const pool = document.getElementById('imagePool');
-            const hint = document.getElementById('emptyHint');
-            const cards = pool.querySelectorAll('.tier-card');
-            if (cards.length > 0) {
-                hint.style.display = 'none';
-            } else {
-                hint.style.display = 'block';
-            }
-        }
-
-        // Criar Card
-        function createCard(src) {
-            const card = document.createElement('div');
-            card.className = 'tier-card';
-
-            const img = document.createElement('img');
-            img.src = src;
-
-            const del = document.createElement('button');
-            del.className = 'del-btn';
-            del.innerText = '×';
-            del.onclick = (e) => {
-                e.stopPropagation();
-                card.remove();
-                checkHint();
-                saveState();
+            const els = {
+                mainTitle: document.getElementById('mainTitle'),
+                creditsName: document.getElementById('creditsName'),
+                dateDisplay: document.getElementById('dateDisplay'),
+                tierList: document.getElementById('tierList'),
+                pool: document.getElementById('imagePool'),
+                emptyHint: document.getElementById('emptyHint'),
+                fileInput: document.getElementById('nativeFileInput'),
+                clearBtn: document.getElementById('clearBtn'),
+                downloadBtn: document.getElementById('downloadBtn'),
+                exportArea: document.getElementById('export-area'),
+                modal: document.getElementById('imageModal'),
+                previewImg: document.getElementById('previewImg'),
+                closeModalBtn: document.getElementById('closeModalBtn'),
+                toast: document.getElementById('toast')
             };
 
-            card.appendChild(img);
-            card.appendChild(del);
-            return card;
-        }
+            let toastTimer = null;
+            function showToast(message, type) {
+                els.toast.textContent = message;
+                els.toast.className = type ? type : '';
+                // force reflow so the transition re-triggers on repeated calls
+                void els.toast.offsetWidth;
+                els.toast.classList.add('show');
+                clearTimeout(toastTimer);
+                toastTimer = setTimeout(() => els.toast.classList.remove('show'), 2200);
+            }
 
-        // UPLOAD DIRETO NATIVO (SEM TRAVAR)
-        const fileInput = document.getElementById('nativeFileInput');
-        fileInput.addEventListener('change', function(e) {
-            const files = Array.from(e.target.files);
-            if (!files.length) return;
+            // ---------- Data inicial (data de hoje) ----------
+            const today = new Date();
+            els.dateDisplay.innerText =
+                `${String(today.getDate()).padStart(2, '0')}.${String(today.getMonth() + 1).padStart(2, '0')}.${today.getFullYear()}`;
 
-            files.forEach(file => {
-                const reader = new FileReader();
-                reader.onload = function(evt) {
-                    const card = createCard(evt.target.result);
-                    document.getElementById('imagePool').appendChild(card);
-                    checkHint();
+            // ---------- Drag & drop ----------
+            const zones = document.querySelectorAll('.tier-dropzone, #imagePool');
+            zones.forEach(zone => {
+                new Sortable(zone, {
+                    group: 'tierlist',
+                    animation: 150,
+                    touchStartThreshold: 3,
+                    ghostClass: 'sortable-ghost',
+                    chosenClass: 'sortable-chosen',
+                    onEnd: () => {
+                        checkEmptyHint();
+                        saveState();
+                    }
+                });
+            });
+
+            function checkEmptyHint() {
+                const hasCards = els.pool.querySelectorAll('.tier-card').length > 0;
+                els.emptyHint.style.display = hasCards ? 'none' : 'block';
+            }
+
+            // ---------- Criação de cards ----------
+            function createCard(src) {
+                const card = document.createElement('div');
+                card.className = 'tier-card';
+
+                const img = document.createElement('img');
+                img.src = src;
+                img.alt = '';
+                img.draggable = false;
+
+                const del = document.createElement('button');
+                del.type = 'button';
+                del.className = 'del-btn';
+                del.innerText = '×';
+                del.setAttribute('aria-label', 'Remover imagem');
+                del.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    card.remove();
+                    checkEmptyHint();
                     saveState();
-                };
-                reader.readAsDataURL(file);
-            });
-
-            fileInput.value = '';
-        });
-
-        // SALVAMENTO SEGURO
-        function saveState() {
-            try {
-                const data = {
-                    title: document.getElementById('mainTitle').innerText,
-                    credits: document.getElementById('creditsName').innerText,
-                    date: document.getElementById('dateDisplay').innerText,
-                    tiers: {},
-                    pool: []
-                };
-
-                document.querySelectorAll('.tier-row').forEach(row => {
-                    const id = row.querySelector('.tier-dropzone').getAttribute('data-id');
-                    const badgeText = row.querySelector('.tier-badge').innerText;
-                    const imgs = [];
-                    row.querySelectorAll('.tier-card img').forEach(img => imgs.push(img.src));
-                    data.tiers[id] = { badgeText, imgs };
                 });
 
-                document.querySelectorAll('#imagePool .tier-card img').forEach(img => {
-                    data.pool.push(img.src);
-                });
-
-                localStorage.setItem('HYTECH_TIERLIST_DATA', JSON.stringify(data));
-            } catch (err) {
-                console.log('Dados salvos');
+                card.appendChild(img);
+                card.appendChild(del);
+                return card;
             }
-        }
 
-        function loadState() {
-            try {
-                const raw = localStorage.getItem('HYTECH_TIERLIST_DATA');
-                if (!raw) return;
-                const data = JSON.parse(raw);
-
-                if (data.title) document.getElementById('mainTitle').innerText = data.title;
-                if (data.credits) document.getElementById('creditsName').innerText = data.credits;
-                if (data.date) document.getElementById('dateDisplay').innerText = data.date;
-
-                if (data.tiers) {
-                    document.querySelectorAll('.tier-row').forEach(row => {
-                        const drop = row.querySelector('.tier-dropzone');
-                        const id = drop.getAttribute('data-id');
-                        if (data.tiers[id]) {
-                            row.querySelector('.tier-badge').innerText = data.tiers[id].badgeText;
-                            data.tiers[id].imgs.forEach(src => drop.appendChild(createCard(src)));
+            // ---------- Redimensiona a imagem antes de guardar ----------
+            // Evita cards gigantes em memória e mantém o estado leve o bastante para salvar.
+            function resizeImage(dataUrl) {
+                return new Promise((resolve, reject) => {
+                    const img = new Image();
+                    img.onload = () => {
+                        let { width, height } = img;
+                        if (width > height && width > MAX_IMG_DIMENSION) {
+                            height = Math.round(height * (MAX_IMG_DIMENSION / width));
+                            width = MAX_IMG_DIMENSION;
+                        } else if (height > MAX_IMG_DIMENSION) {
+                            width = Math.round(width * (MAX_IMG_DIMENSION / height));
+                            height = MAX_IMG_DIMENSION;
                         }
-                    });
-                }
-
-                if (data.pool && data.pool.length) {
-                    data.pool.forEach(src => document.getElementById('imagePool').appendChild(createCard(src)));
-                }
-                checkHint();
-            } catch (e) {
-                console.error(e);
+                        const canvas = document.createElement('canvas');
+                        canvas.width = width;
+                        canvas.height = height;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, width, height);
+                        resolve(canvas.toDataURL('image/jpeg', JPEG_QUALITY));
+                    };
+                    img.onerror = reject;
+                    img.src = dataUrl;
+                });
             }
-        }
 
-        // Auto-save ao digitar
-        document.querySelectorAll('[contenteditable="true"]').forEach(el => {
-            el.addEventListener('blur', () => saveState());
-        });
-
-        // Limpar tudo
-        document.getElementById('clearBtn').onclick = () => {
-            if (confirm('Deseja apagar todas as fotos?')) {
-                document.querySelectorAll('.tier-card').forEach(el => el.remove());
-                checkHint();
-                saveState();
+            function readFileAsDataURL(file) {
+                return new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.onload = (evt) => resolve(evt.target.result);
+                    reader.onerror = reject;
+                    reader.readAsDataURL(file);
+                });
             }
-        };
 
-        // DOWNLOAD EM HD
-        document.getElementById('downloadBtn').onclick = () => {
-            const btn = document.getElementById('downloadBtn');
-            btn.innerText = '⏳ Criando HD...';
-            btn.disabled = true;
-
-            const delBtns = document.querySelectorAll('.del-btn');
-            delBtns.forEach(b => b.style.display = 'none');
-
-            const target = document.getElementById('export-area');
-
-            html2canvas(target, {
-                scale: 2,
-                backgroundColor: '#0d0f14',
-                useCORS: true,
-                logging: false
-            }).then(canvas => {
-                delBtns.forEach(b => b.style.display = 'flex');
-                btn.innerText = '📸 Baixar PNG HD';
-                btn.disabled = false;
-
-                const imageURI = canvas.toDataURL('image/png');
-
-                // Tenta download direto
-                const link = document.createElement('a');
-                link.download = `tierlist-hytechpixel.png`;
-                link.href = imageURI;
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-
-                // Modal visual para garantir no celular
-                document.getElementById('previewImg').src = imageURI;
-                document.getElementById('imageModal').style.display = 'flex';
-            }).catch(e => {
-                delBtns.forEach(b => b.style.display = 'flex');
-                btn.innerText = '📸 Baixar PNG HD';
-                btn.disabled = false;
-                alert('Erro: ' + e.message);
-            });
-        };
-
-        window.onload = loadState;
-    </script>
-</body>
-</html>                     
+            // ---------- Upload ----------
+            // Alguns navegadores (principalmente em Android/iOS mais antigos) não preenchem
+            // file.type para f
