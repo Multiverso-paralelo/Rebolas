@@ -210,3 +210,283 @@
 
         .tier-card .del-btn {
             position: absolute;
+            top: -4px;
+            right: -4px;
+            background: #ff0055;
+            color: #fff;
+            border: none;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            font-size: 13px;
+            font-weight: 900;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 5;
+        }
+
+        /* ESTOQUE */
+        .pool-container {
+            width: 100%;
+            max-width: 1100px;
+            background: #141721;
+            border: 1px solid #232838;
+            border-radius: 10px;
+            padding: 10px;
+            margin-top: 12px;
+        }
+
+        .pool-header {
+            font-size: 13px;
+            font-weight: 800;
+            color: #8f96a3;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+        }
+
+        .pool-zone {
+            min-height: 90px;
+            background: #0a0b0e;
+            border: 2px dashed #282f42;
+            border-radius: 6px;
+            padding: 8px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            align-items: center;
+        }
+
+        /* MODAL DE DOWNLOAD */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.95);
+            z-index: 99999;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 12px;
+        }
+
+        .modal-content {
+            background: #141721;
+            border: 2px solid #00b4db;
+            border-radius: 8px;
+            padding: 12px;
+            max-width: 100%;
+            max-height: 90%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            overflow-y: auto;
+        }
+
+        .modal-content img {
+            max-width: 100%;
+            border-radius: 4px;
+            border: 1px solid #444;
+        }
+
+        .modal-tip {
+            font-size: 14px;
+            color: #00ff88;
+            text-align: center;
+            font-weight: 900;
+        }
+
+        @media (max-width: 600px) {
+            .tier-badge {
+                width: 90px;
+                min-width: 90px;
+                font-size: 11px;
+            }
+            .tier-card {
+                width: 52px;
+                height: 52px;
+            }
+            .main-title {
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- FERRAMENTAS -->
+    <div class="toolbar">
+        <div style="display: flex; gap: 8px;">
+            <div class="btn btn-upload">
+                📁 + IMPORTAR FOTOS
+                <input type="file" id="filePicker" multiple accept="image/*">
+            </div>
+            <button class="btn btn-clear" id="clearBtn">LIMPAR</button>
+        </div>
+        <button class="btn btn-download" id="downloadBtn">📸 BAIXAR PNG HD</button>
+    </div>
+
+    <!-- TIERLIST -->
+    <div id="export-area">
+        <div class="tier-header">
+            <div class="main-title" contenteditable="true">TIERLIST OFICIAL</div>
+            <div class="credits-box">
+                <div>CREDITS: <span class="credits-name" contenteditable="true">HYTECHPIXEL</span></div>
+                <div class="date-text" id="dateDisplay" contenteditable="true"></div>
+            </div>
+        </div>
+
+        <div class="tier-list">
+            <div class="tier-row">
+                <div class="tier-badge tier-top10" contenteditable="true">Top 10</div>
+                <div class="tier-dropzone"></div>
+            </div>
+            <div class="tier-row">
+                <div class="tier-badge tier-overall" contenteditable="true">Overall Meta</div>
+                <div class="tier-dropzone"></div>
+            </div>
+            <div class="tier-row">
+                <div class="tier-badge tier-submeta" contenteditable="true">Sub-Meta</div>
+                <div class="tier-dropzone"></div>
+            </div>
+            <div class="tier-row">
+                <div class="tier-badge tier-decent" contenteditable="true">Decent</div>
+                <div class="tier-dropzone"></div>
+            </div>
+            <div class="tier-row">
+                <div class="tier-badge tier-msupport" contenteditable="true">Meta Support</div>
+                <div class="tier-dropzone"></div>
+            </div>
+            <div class="tier-row">
+                <div class="tier-badge tier-support" contenteditable="true">Support</div>
+                <div class="tier-dropzone"></div>
+            </div>
+            <div class="tier-row">
+                <div class="tier-badge tier-buffers" contenteditable="true">Buffers</div>
+                <div class="tier-dropzone"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ESTOQUE DE FOTOS -->
+    <div class="pool-container">
+        <div class="pool-header">📦 Estoque de Imagens (Arraste para as Tiers)</div>
+        <div class="pool-zone" id="imagePool"></div>
+    </div>
+
+    <!-- POPUP DO DOWNLOAD -->
+    <div class="modal" id="imageModal">
+        <div class="modal-content">
+            <div class="modal-tip">👇 SEGURE O DEDO NA IMAGEM E TOQUE EM "FAZER DOWNLOAD DA IMAGEM":</div>
+            <img id="previewImg" src="">
+            <button class="btn btn-clear" onclick="document.getElementById('imageModal').style.display='none'">FECHAR</button>
+        </div>
+    </div>
+
+    <script>
+        // Data atual
+        const d = new Date();
+        document.getElementById('dateDisplay').innerText = 
+            `${String(d.getDate()).padStart(2,'0')}.${String(d.getMonth()+1).padStart(2,'0')}.${d.getFullYear()}`;
+
+        // Arrastar e Soltar
+        const dropzones = document.querySelectorAll('.tier-dropzone, #imagePool');
+        dropzones.forEach(zone => {
+            new Sortable(zone, {
+                group: 'tierlist',
+                animation: 150,
+                touchStartThreshold: 3,
+                ghostClass: 'sortable-ghost'
+            });
+        });
+
+        // UPLOAD DIRETO E SÍNCRONO (NÃO TRAVA E NÃO FALHA NO ANDROID)
+        const filePicker = document.getElementById('filePicker');
+        const pool = document.getElementById('imagePool');
+
+        filePicker.addEventListener('change', function() {
+            const files = this.files;
+            if (!files || !files.length) return;
+
+            for (let i = 0; i < files.length; i++) {
+                const imgURL = URL.createObjectURL(files[i]);
+                
+                const card = document.createElement('div');
+                card.className = 'tier-card';
+
+                const img = document.createElement('img');
+                img.src = imgURL;
+
+                const del = document.createElement('button');
+                del.className = 'del-btn';
+                del.innerText = '×';
+                del.onclick = function(e) {
+                    e.stopPropagation();
+                    card.remove();
+                };
+
+                card.appendChild(img);
+                card.appendChild(del);
+                pool.appendChild(card);
+            }
+
+            this.value = '';
+        });
+
+        // LIMPAR TUDO
+        document.getElementById('clearBtn').onclick = function() {
+            if (confirm('Apagar todas as fotos?')) {
+                document.querySelectorAll('.tier-card').forEach(el => el.remove());
+            }
+        };
+
+        // DOWNLOAD DA IMAGEM
+        document.getElementById('downloadBtn').onclick = function() {
+            const btn = this;
+            btn.innerText = '⏳ GERANDO...';
+            btn.disabled = true;
+
+            const delBtns = document.querySelectorAll('.del-btn');
+            delBtns.forEach(b => b.style.display = 'none');
+
+            const target = document.getElementById('export-area');
+
+            html2canvas(target, {
+                scale: 2,
+                backgroundColor: '#0d0f14',
+                useCORS: true,
+                allowTaint: true
+            }).then(canvas => {
+                delBtns.forEach(b => b.style.display = 'flex');
+                btn.innerText = '📸 BAIXAR PNG HD';
+                btn.disabled = false;
+
+                const imageURI = canvas.toDataURL('image/png');
+
+                // Abre a imagem pronta no modal (garantido no Chrome do celular)
+                document.getElementById('previewImg').src = imageURI;
+                document.getElementById('imageModal').style.display = 'flex';
+
+                // Tenta forçar download automático
+                const a = document.createElement('a');
+                a.download = 'tierlist-hytechpixel.png';
+                a.href = imageURI;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+
+            }).catch(err => {
+                delBtns.forEach(b => b.style.display = 'flex');
+                btn.innerText = '📸 BAIXAR PNG HD';
+                btn.disabled = false;
+                alert('Erro ao gerar: ' + err);
+            });
+        };
+    </script>
+</body>
+</html>
