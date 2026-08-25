@@ -4,9 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Tierlist - Hytechpixel</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,800;0,900;1,900&family=Rajdhani:wght@600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
@@ -15,7 +12,7 @@
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: 'Rajdhani', sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Impact, sans-serif;
             -webkit-tap-highlight-color: transparent;
         }
 
@@ -29,7 +26,7 @@
             min-height: 100vh;
         }
 
-        /* BARRA SUPERIOR */
+        /* BARRA DE FERRAMENTAS */
         .toolbar {
             width: 100%;
             max-width: 1100px;
@@ -46,45 +43,41 @@
         }
 
         .btn {
+            position: relative;
             background: #1f2433;
             color: #fff;
             border: 1px solid #363e57;
-            padding: 10px 14px;
+            padding: 12px 18px;
             border-radius: 8px;
-            font-size: 13px;
-            font-weight: 800;
+            font-size: 14px;
+            font-weight: 900;
             cursor: pointer;
             display: inline-flex;
             align-items: center;
             gap: 6px;
             text-transform: uppercase;
-            transition: filter 0.15s ease, transform 0.1s ease;
+            overflow: hidden;
         }
-
-        .btn:hover { filter: brightness(1.15); }
-        .btn:active { transform: scale(0.97); }
-        .btn:focus-visible { outline: 2px solid #00d2ff; outline-offset: 2px; }
-        .btn:disabled { opacity: 0.6; cursor: not-allowed; filter: none; transform: none; }
 
         .btn-upload {
             background: #00d26a;
             color: #000;
-            font-weight: 900;
             border: none;
+        }
+
+        /* O INPUT FICA EXATAMENTE EM CIMA DO BOTÃO (NÃO FALHA NO ANDROID) */
+        .btn-upload input[type="file"] {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
             cursor: pointer;
         }
 
         .btn-download { background: #00b4db; color: #fff; border: none; }
         .btn-clear { background: #d90429; color: #fff; border: none; }
-
-        .visually-hidden {
-            position: absolute;
-            width: 1px;
-            height: 1px;
-            overflow: hidden;
-            clip: rect(0 0 0 0);
-            white-space: nowrap;
-        }
 
         /* QUADRO DA TIERLIST */
         #export-area {
@@ -114,19 +107,12 @@
         }
 
         .main-title {
-            font-family: 'Montserrat', sans-serif;
             font-size: 22px;
             font-weight: 900;
             font-style: italic;
             outline: none;
             color: #ffffff;
             text-transform: uppercase;
-        }
-
-        [contenteditable="true"]:focus {
-            outline: 1px dashed #00d2ff;
-            outline-offset: 3px;
-            border-radius: 3px;
         }
 
         .credits-box {
@@ -171,7 +157,6 @@
             align-items: center;
             justify-content: center;
             text-align: center;
-            font-family: 'Montserrat', sans-serif;
             font-size: 14px;
             font-weight: 900;
             text-transform: uppercase;
@@ -182,7 +167,7 @@
             outline: none;
         }
 
-        /* CORES */
+        /* CORES DAS TIERS */
         .tier-top10    { background: linear-gradient(135deg, #b8860b, #ffd700); color: #000; text-shadow: none; font-size: 15px; }
         .tier-overall  { background: linear-gradient(135deg, #7b1127, #e63946); }
         .tier-submeta  { background: linear-gradient(135deg, #4a0e4e, #9d4edd); }
@@ -200,12 +185,6 @@
             align-items: center;
             min-height: 70px;
             background: rgba(0, 0, 0, 0.4);
-            transition: background 0.15s ease;
-        }
-
-        .tier-dropzone.drag-over,
-        .pool-zone.drag-over {
-            background: rgba(0, 210, 255, 0.08);
         }
 
         /* CARDS */
@@ -218,9 +197,8 @@
             position: relative;
             cursor: grab;
             touch-action: none;
+            flex-shrink: 0;
         }
-
-        .tier-card:active { cursor: grabbing; }
 
         .tier-card img {
             width: 100%;
@@ -232,356 +210,3 @@
 
         .tier-card .del-btn {
             position: absolute;
-            top: -4px;
-            right: -4px;
-            background: #ff0055;
-            color: #fff;
-            border: none;
-            border-radius: 50%;
-            width: 18px;
-            height: 18px;
-            font-size: 11px;
-            font-weight: 900;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-        }
-
-        .sortable-ghost {
-            opacity: 0.35;
-        }
-
-        .sortable-chosen img {
-            box-shadow: 0 0 0 2px #00d2ff;
-        }
-
-        /* ESTOQUE */
-        .pool-container {
-            width: 100%;
-            max-width: 1100px;
-            background: #141721;
-            border: 1px solid #232838;
-            border-radius: 10px;
-            padding: 10px;
-            margin-top: 12px;
-        }
-
-        .pool-header {
-            font-size: 12px;
-            font-weight: 800;
-            color: #8f96a3;
-            margin-bottom: 6px;
-            text-transform: uppercase;
-        }
-
-        .pool-zone {
-            min-height: 80px;
-            background: #0a0b0e;
-            border: 2px dashed #282f42;
-            border-radius: 6px;
-            padding: 6px;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 5px;
-            align-items: center;
-        }
-
-        .empty-hint {
-            color: #555e73;
-            font-size: 13px;
-            font-weight: 700;
-            width: 100%;
-            text-align: center;
-            pointer-events: none;
-        }
-
-        /* MODAL */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.92);
-            z-index: 9999;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 12px;
-        }
-
-        .modal-content {
-            background: #141721;
-            border: 2px solid #00b4db;
-            border-radius: 8px;
-            padding: 12px;
-            max-width: 100%;
-            max-height: 90%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 10px;
-            overflow-y: auto;
-        }
-
-        .modal-content img {
-            max-width: 100%;
-            border-radius: 4px;
-        }
-
-        .modal-tip {
-            font-size: 13px;
-            color: #00ff88;
-            text-align: center;
-            font-weight: 800;
-        }
-
-        /* TOAST */
-        #toast {
-            position: fixed;
-            left: 50%;
-            bottom: 18px;
-            transform: translate(-50%, 20px);
-            background: #141721;
-            border: 1px solid #363e57;
-            color: #fff;
-            font-weight: 800;
-            font-size: 13px;
-            padding: 10px 16px;
-            border-radius: 8px;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.2s ease, transform 0.2s ease;
-            z-index: 10000;
-            max-width: 90vw;
-            text-align: center;
-        }
-
-        #toast.show {
-            opacity: 1;
-            transform: translate(-50%, 0);
-        }
-
-        #toast.error { border-color: #d90429; color: #ff5c7a; }
-        #toast.success { border-color: #00d26a; color: #00ff88; }
-
-        @media (max-width: 600px) {
-            .tier-badge {
-                width: 90px;
-                min-width: 90px;
-                font-size: 11px;
-            }
-            .tier-card {
-                width: 50px;
-                height: 50px;
-            }
-            .main-title {
-                font-size: 16px;
-            }
-        }
-    </style>
-</head>
-<body>
-
-    <!-- BOTÕES -->
-    <div class="toolbar">
-        <div style="display: flex; gap: 6px; align-items: center;">
-            <label for="nativeFileInput" id="uploadLabel" class="btn btn-upload">
-                📁 + Importar Fotos
-            </label>
-            <input type="file" id="nativeFileInput" class="visually-hidden" multiple accept="image/*,.heic,.heif">
-            <button class="btn btn-clear" id="clearBtn" type="button">Limpar</button>
-        </div>
-        <button class="btn btn-download" id="downloadBtn" type="button">📸 Baixar PNG HD</button>
-    </div>
-
-    <!-- TIERLIST -->
-    <div id="export-area">
-        <div class="tier-header">
-            <div class="main-title" id="mainTitle" contenteditable="true">TIERLIST OFICIAL</div>
-            <div class="credits-box">
-                <div>CREDITS: <span class="credits-name" id="creditsName" contenteditable="true">HYTECHPIXEL</span></div>
-                <div class="date-text" id="dateDisplay" contenteditable="true"></div>
-            </div>
-        </div>
-
-        <div class="tier-list" id="tierList">
-            <div class="tier-row">
-                <div class="tier-badge tier-top10" contenteditable="true">Top 10</div>
-                <div class="tier-dropzone" data-id="top10"></div>
-            </div>
-            <div class="tier-row">
-                <div class="tier-badge tier-overall" contenteditable="true">Overall Meta</div>
-                <div class="tier-dropzone" data-id="overall"></div>
-            </div>
-            <div class="tier-row">
-                <div class="tier-badge tier-submeta" contenteditable="true">Sub-Meta</div>
-                <div class="tier-dropzone" data-id="submeta"></div>
-            </div>
-            <div class="tier-row">
-                <div class="tier-badge tier-decent" contenteditable="true">Decent</div>
-                <div class="tier-dropzone" data-id="decent"></div>
-            </div>
-            <div class="tier-row">
-                <div class="tier-badge tier-msupport" contenteditable="true">Meta Support</div>
-                <div class="tier-dropzone" data-id="msupport"></div>
-            </div>
-            <div class="tier-row">
-                <div class="tier-badge tier-support" contenteditable="true">Support</div>
-                <div class="tier-dropzone" data-id="support"></div>
-            </div>
-            <div class="tier-row">
-                <div class="tier-badge tier-buffers" contenteditable="true">Buffers</div>
-                <div class="tier-dropzone" data-id="buffers"></div>
-            </div>
-        </div>
-    </div>
-
-    <!-- BANCO DE IMAGENS -->
-    <div class="pool-container">
-        <div class="pool-header">📦 Estoque de Imagens (Arraste ou Toque para mover)</div>
-        <div class="pool-zone" id="imagePool">
-            <span class="empty-hint" id="emptyHint">Nenhuma foto importada ainda. Clique no botão verde acima!</span>
-        </div>
-    </div>
-
-    <!-- MODAL DE DOWNLOAD -->
-    <div class="modal" id="imageModal">
-        <div class="modal-content">
-            <div class="modal-tip">👇 SEGURE O DEDO NA IMAGEM ABAIXO E TOQUE EM "FAZER DOWNLOAD DA IMAGEM":</div>
-            <img id="previewImg" src="" alt="Prévia da tierlist gerada">
-            <button class="btn btn-clear" id="closeModalBtn" type="button">Fechar</button>
-        </div>
-    </div>
-
-    <div id="toast" role="status" aria-live="polite"></div>
-
-    <script>
-        (function () {
-            'use strict';
-
-            const STORAGE_KEY = 'tierlist-state';
-            const MAX_IMG_DIMENSION = 220;   // downscale uploads so the board stays fast and light
-            const JPEG_QUALITY = 0.85;
-
-            const els = {
-                mainTitle: document.getElementById('mainTitle'),
-                creditsName: document.getElementById('creditsName'),
-                dateDisplay: document.getElementById('dateDisplay'),
-                tierList: document.getElementById('tierList'),
-                pool: document.getElementById('imagePool'),
-                emptyHint: document.getElementById('emptyHint'),
-                fileInput: document.getElementById('nativeFileInput'),
-                clearBtn: document.getElementById('clearBtn'),
-                downloadBtn: document.getElementById('downloadBtn'),
-                exportArea: document.getElementById('export-area'),
-                modal: document.getElementById('imageModal'),
-                previewImg: document.getElementById('previewImg'),
-                closeModalBtn: document.getElementById('closeModalBtn'),
-                toast: document.getElementById('toast')
-            };
-
-            let toastTimer = null;
-            function showToast(message, type) {
-                els.toast.textContent = message;
-                els.toast.className = type ? type : '';
-                // force reflow so the transition re-triggers on repeated calls
-                void els.toast.offsetWidth;
-                els.toast.classList.add('show');
-                clearTimeout(toastTimer);
-                toastTimer = setTimeout(() => els.toast.classList.remove('show'), 2200);
-            }
-
-            // ---------- Data inicial (data de hoje) ----------
-            const today = new Date();
-            els.dateDisplay.innerText =
-                `${String(today.getDate()).padStart(2, '0')}.${String(today.getMonth() + 1).padStart(2, '0')}.${today.getFullYear()}`;
-
-            // ---------- Drag & drop ----------
-            const zones = document.querySelectorAll('.tier-dropzone, #imagePool');
-            zones.forEach(zone => {
-                new Sortable(zone, {
-                    group: 'tierlist',
-                    animation: 150,
-                    touchStartThreshold: 3,
-                    ghostClass: 'sortable-ghost',
-                    chosenClass: 'sortable-chosen',
-                    onEnd: () => {
-                        checkEmptyHint();
-                        saveState();
-                    }
-                });
-            });
-
-            function checkEmptyHint() {
-                const hasCards = els.pool.querySelectorAll('.tier-card').length > 0;
-                els.emptyHint.style.display = hasCards ? 'none' : 'block';
-            }
-
-            // ---------- Criação de cards ----------
-            function createCard(src) {
-                const card = document.createElement('div');
-                card.className = 'tier-card';
-
-                const img = document.createElement('img');
-                img.src = src;
-                img.alt = '';
-                img.draggable = false;
-
-                const del = document.createElement('button');
-                del.type = 'button';
-                del.className = 'del-btn';
-                del.innerText = '×';
-                del.setAttribute('aria-label', 'Remover imagem');
-                del.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    card.remove();
-                    checkEmptyHint();
-                    saveState();
-                });
-
-                card.appendChild(img);
-                card.appendChild(del);
-                return card;
-            }
-
-            // ---------- Redimensiona a imagem antes de guardar ----------
-            // Evita cards gigantes em memória e mantém o estado leve o bastante para salvar.
-            function resizeImage(dataUrl) {
-                return new Promise((resolve, reject) => {
-                    const img = new Image();
-                    img.onload = () => {
-                        let { width, height } = img;
-                        if (width > height && width > MAX_IMG_DIMENSION) {
-                            height = Math.round(height * (MAX_IMG_DIMENSION / width));
-                            width = MAX_IMG_DIMENSION;
-                        } else if (height > MAX_IMG_DIMENSION) {
-                            width = Math.round(width * (MAX_IMG_DIMENSION / height));
-                            height = MAX_IMG_DIMENSION;
-                        }
-                        const canvas = document.createElement('canvas');
-                        canvas.width = width;
-                        canvas.height = height;
-                        const ctx = canvas.getContext('2d');
-                        ctx.drawImage(img, 0, 0, width, height);
-                        resolve(canvas.toDataURL('image/jpeg', JPEG_QUALITY));
-                    };
-                    img.onerror = reject;
-                    img.src = dataUrl;
-                });
-            }
-
-            function readFileAsDataURL(file) {
-                return new Promise((resolve, reject) => {
-                    const reader = new FileReader();
-                    reader.onload = (evt) => resolve(evt.target.result);
-                    reader.onerror = reject;
-                    reader.readAsDataURL(file);
-                });
-            }
-
-            // ---------- Upload ----------
-            // Alguns navegadores (principalmente em Android/iOS mais antigos) não preenchem
-            // file.type para f
